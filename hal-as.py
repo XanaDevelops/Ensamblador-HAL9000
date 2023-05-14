@@ -147,8 +147,8 @@ class HALAS():
        
         if(memvalue.isnumeric()): #valor absoluto
             memvalue = int(memvalue)
-            if memvalue>=2**8:
-                raise ValueError("Valor absoluto excede 2^8 bits")
+            if memvalue>=2**8 or memvalue<0:
+                raise ValueError("Rango memoria invalido: ",memvalue)
             res+=bin(memvalue)[2:].zfill(8)
         else:
             if(memvalue not in self.etiquetas.keys()):
@@ -208,11 +208,11 @@ class HALAS():
         factores = self.cleanFactores(factores)
 
         k:str = factores[0]
-        if(k[0]!="#" and not k[1:].isnumeric()):
+        if(k[0]!="#" and not self.isNum(k[1:])):
             raise ValueError("Absoluto no valido", k)
         k:int = int(k[1:])
-        if(k>=2**8):
-            raise ValueError("Absoluto demaisado grande",k)
+        if( -2**7>k or k>=2**7):
+            raise ValueError("Absoluto fuera de rango",k)
         res+=self.getAbsC2(k, 8) 
 
         reg = factores[1]
@@ -234,8 +234,8 @@ class HALAS():
         if(p[0]!="#" and not p[1:].isnumeric()):
             raise InvalidSyntax("Absoluto no valido", p)
         p:int = int(p[1:])
-        if(p>=2**3):
-            raise InvalidSyntax("Absoluto demaisado grande",p)
+        if(p>=2**3 or p<0):
+            raise InvalidSyntax("Absoluto fuera de rango: ",p)
         res+=self.getAbsC2(p, 3)
         res+="0"
 
@@ -264,14 +264,16 @@ class HALAS():
             factores.pop(0)
 
         v = factores[0]
-        if(not v.isnumeric()):
+        if(not self.isNum(v)):
             raise ValueError("eso no es un numero decimal", v)
         v:int = int(v)
 
-        if(v<-2**16 or v >=2**16):
+        if(abs(v) >=2**16):
             raise ValueError("rango invalido", v)
         
-        return hex(v)[2:].zfill(4)
+        if(v<0):
+            v=2**16+v
+        return hex(v)[2:].zfill(4).upper()
 
     def setEtiquetas(self, lineas:list) -> None:
         memdir:int = 0
@@ -292,9 +294,8 @@ class HALAS():
         while(factores[i]==""):
             factores.pop(i)
 
-        if(factores[i].isnumeric()): #se trata de un valor de memoria
+        if(self.isNum(factores[i])): #se trata de un valor de memoria
             return -1
-        
         if factores[i] not in self.ops:
             raise InvalidOPCode("OP desconocido:", factores[i])
         return self.ops.index(factores[i])
@@ -310,6 +311,12 @@ class HALAS():
             r="1"*(l-len(r))+r
             return r
         
+    def isNum(self, valor:str) -> bool:
+        if valor.isnumeric():
+            return True
+        if valor[0] == "-" and valor[1:].isnumeric():
+            return True
+        return False
 
     def cleanFactores(self, factores) -> list:
         if(":" in factores[0]): #tiene etiqueta

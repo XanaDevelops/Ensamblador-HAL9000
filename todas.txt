@@ -12,6 +12,14 @@ END:        EXIT
             AND T0, T1, T1
             SET #0, X2
             SET #-1, X3
-VECTOR:     SET #255, X4
+VECTOR:     SET #127, X4
             ADQ #5, X6
             LSH #3, X3, #0
+            1
+            2
+            3
+            4
+            5
+            -1
+            -2
+            -3
