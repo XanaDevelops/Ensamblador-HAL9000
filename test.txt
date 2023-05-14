@@ -1,0 +1,7 @@
+START:  LOA A, T0
+        SET #4, X2
+        ADD T0, X2, T1
+        STO T1, B
+        EXIT
+A:      3
+B:      0
