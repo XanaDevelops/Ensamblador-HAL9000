@@ -1,0 +1,17 @@
+START:      LOA VECTOR, T0
+            STO T0, VECTOR
+            LOIP (X3), T1
+ET:         STIP T1, (X3)
+            GOI START
+            GOZ ET
+            GON END
+END:        EXIT
+            COPY T1, X2
+            ADD X4, X5, X6
+            SUB X4, T0, X7
+            AND T0, T1, T1
+            SET #0, X2
+            SET #-1, X3
+VECTOR:     SET #255, X4
+            ADQ #5, X6
+            LSH #3, X3, #0

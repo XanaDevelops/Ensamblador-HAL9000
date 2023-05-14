@@ -28,7 +28,7 @@ class HALAS():
             print("Ese archivo no existe", sys.stderr)
             exit(1)
         except (InvalidSyntax, InvalidOPCode, ValueError) as ex:
-            print(str(type(ex)).split(".")[1].replace("'>",""), ex)
+            print(type(ex), ex)
 
 
 
@@ -67,6 +67,8 @@ class HALAS():
                     hexs.append(self.LSH(linea))
                 case -1:
                     hexs.append(self.MemValue(linea))
+                case None:
+                    continue
             
         res:str = "EMEM:\tDC.W "
         lcount:int = 0
@@ -97,7 +99,7 @@ class HALAS():
             res+=bin(memvalue)[2:].zfill(8)
         else:
             if(memvalue not in self.etiquetas.keys()):
-                raise InvalidSyntax("Etiqueta no definida")
+                raise InvalidSyntax("Etiqueta no definida", memvalue)
             res += bin(self.etiquetas[memvalue])[2:].zfill(8)
 
         ti = factores[1-op]
@@ -150,7 +152,7 @@ class HALAS():
             res+=bin(memvalue)[2:].zfill(8)
         else:
             if(memvalue not in self.etiquetas.keys()):
-                raise InvalidSyntax("Etiqueta no definida")
+                raise InvalidSyntax("Etiqueta no definida", memvalue)
             
             res += bin(self.etiquetas[memvalue])[2:].zfill(8)
 
@@ -282,6 +284,9 @@ class HALAS():
     def getOpId(self, linea:str) -> int:
         i:int = 0
         factores:list = linea.split(" ")
+        if(factores[0]=='' and len(factores)==1):
+            print("Linea vacia")
+            return None
         if(":" in factores[0]): #tiene etiqueta
             i+=1
         while(factores[i]==""):
