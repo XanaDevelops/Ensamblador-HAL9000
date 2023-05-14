@@ -6,6 +6,8 @@ class InvalidOPCode(Exception):
     pass
 
 class HALAS():
+    version:str = "1.0.0"
+
     rutaArchivo :str =""
     ops:list = "LOA STO LOIP STIP GOI GOZ GON EXIT COPY ADD SUB AND SET ADQ LSH".split(" ")
     opsCode:list = "0000 0001 0010 0011 0100 0101 0110 10 11000 11001 11010 11011 11100 11101 11110".split(" ")
